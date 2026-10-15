@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design Patterns & SOLID in Python, explained for school students</title>
+<style>
+/*__CSS__*/
+.lesson-tag{font-size:15px;color:var(--muted);margin:0 0 14px}
+.part-title{font-size:11.5px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);padding:12px 8px 4px}
+.litem{display:flex;gap:8px;align-items:center;padding:5px 8px;border-radius:6px;font-size:14px;color:var(--fg);text-decoration:none;line-height:1.3}
+.litem:hover{background:var(--bg3)}.litem.active{background:var(--bg3);box-shadow:inset 3px 0 0 var(--accent)}
+.litem .ck{width:14px;color:var(--ok);flex:none}
+.litem .ex{margin-left:auto;font-size:11px;color:var(--muted)}
+.litem.hidden{display:none}
+.exercise{border:1px solid var(--line);border-radius:12px;padding:4px 16px 14px;margin:18px 0;background:color-mix(in srgb,var(--ok) 4%,var(--bg))}
+.exercise h3{margin-top:12px}
+.quiz details{border:1px solid var(--line);border-radius:8px;margin:8px 0;background:var(--bg2)}
+.quiz summary{cursor:pointer;padding:9px 14px;font-weight:600;list-style:none}
+.quiz summary::before{content:"Q ";color:var(--accent)}
+.quiz details>div{padding:4px 14px 10px;border-top:1px solid var(--line)}
+.lesson-body h4{font-size:18px;color:var(--fg);margin:24px 0 6px}
+.done-badge{color:var(--ok);font-weight:700;font-size:14px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="btn" id="menuBtn">☰</button>
+  <div class="brand">Design <span>Patterns</span> &amp; SOLID <small class="muted" style="font-weight:500">· explained for school students</small></div>
+  <div class="grow"></div>
+  <input type="search" id="q" placeholder="Find a lesson…  ( / )" autocomplete="off">
+  <a class="btn" href="practice.html">💻 Coding practice</a>
+  <a class="btn" href="index.html">← Python guide</a>
+  <button class="btn" id="themeBtn" title="Toggle theme">◐</button>
+</div>
+<nav class="side" id="side"></nav>
+<main><div class="wrap" id="view"></div></main>
+<script id="data" type="application/json">/*__DATA__*/</script>
+<script>
+(function () {
+  "use strict";
+  const DATA = JSON.parse(document.getElementById("data").textContent);
+  const PYODIDE = "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/";
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  };
+  document.documentElement.dataset.theme = store.get("pyDeep.theme", "dark");
+  $("#themeBtn").onclick = () => {
+    const t = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = t; store.set("pyDeep.theme", t);
+  };
+  $("#menuBtn").onclick = () => document.body.classList.toggle("nav-open");
+
+/*__SHARED_JS__*/
+
+  /* ---------- progress ---------- */
+  const lessons = DATA.lessons;
+  const byId = Object.fromEntries(lessons.map(l => [l.id, l]));
+  let passed = new Set(store.get("pyPatterns.passed", []));          // exercise ids that passed
+  const lessonDone = l => l.exercises.length ? l.exercises.every(x => passed.has(x.id)) : store.get("pyPatterns.read", []).includes(l.id);
+  const markRead = id => { const r = new Set(store.get("pyPatterns.read", [])); r.add(id); store.set("pyPatterns.read", [...r]); };
+
+  /* ---------- sidebar ---------- */
+  function renderSide(active) {
+    const doneN = lessons.filter(lessonDone).length;
+    const exAll = lessons.flatMap(l => l.exercises), exDone = exAll.filter(x => passed.has(x.id)).length;
+    let html = `<a class="thead" href="#/">🏠 Overview</a>
+      <div class="meter"><b>${doneN}</b> / ${lessons.length} lessons complete<div class="bar"><i style="width:${100 * doneN / lessons.length}%"></i></div>
+      Exercises passed: <b>${exDone}</b> / ${exAll.length}</div>`;
+    DATA.parts.forEach(([pid, ptitle]) => {
+      html += `<div class="part-title">${esc(ptitle)}</div>`;
+      lessons.filter(l => l.part === pid).forEach(l => {
+        html += `<a class="litem${l.id === active ? " active" : ""}" data-title="${esc((l.title + " " + l.tagline).toLowerCase())}" href="#/l/${l.id}">
+          <span class="ck">${lessonDone(l) ? "✓" : ""}</span><span>${esc(l.title)}</span>${l.exercises.length ? `<span class="ex">${l.exercises.filter(x => passed.has(x.id)).length}/${l.exercises.length}</span>` : ""}</a>`;
+      });
+    });
+    $("#side").innerHTML = html;
+    applySearch();
+    $(".litem.active")?.scrollIntoView({ block: "nearest" });
+  }
+  function applySearch() {
+    const q = $("#q").value.trim().toLowerCase();
+    $$(".litem").forEach(a => a.classList.toggle("hidden", !!q && !a.dataset.title.includes(q)));
+  }
+  $("#q").addEventListener("input", applySearch);
+
+  /* ---------- views ---------- */
+  const view = $("#view");
+  function homeView() {
+    const next = lessons.find(l => !lessonDone(l)) || lessons[0];
+    view.innerHTML = `<div class="hero"><h1>Design Patterns &amp; SOLID in Python</h1>
+      <p class="muted" style="margin:4px 0 12px">Explained like you're in school, with stories, pictures and plain words. <b>${lessons.length} lessons</b>: the 5 SOLID principles, all <b>22 classic design patterns</b>, and a <b>complete project</b> (QuickBite, a food-ordering app) that uses them together. Every lesson has hands-on Python exercises that run right here in your browser.</p>
+      <a class="btn primary" href="#/l/${next.id}">▶ ${lessonDone(lessons[0]) ? "Continue" : "Start"}: ${esc(next.title)}</a></div>
+      <h2>How this course works</h2>
+      <ol><li>Go <b>in order</b>: Part 0 → SOLID → Creational → Structural → Behavioral → the Project.</li>
+      <li>Each lesson: <b>story → messy code → the pattern → picture → when NOT to use it → Python shortcut → quick check → practice</b>.</li>
+      <li>Do every exercise. Press <b>Run tests</b> (or <span class="kbd">Ctrl</span>+<span class="kbd">Enter</span>), and the lesson gets ✓ when all its exercises pass.</li>
+      <li>In the project, every step reuses your earlier steps, so you build a real app piece by piece.</li></ol>
+      <h2>The map</h2>
+      ${DATA.parts.map(([pid, ptitle]) => `<h3>${esc(ptitle)}</h3><div class="cards">${lessons.filter(l => l.part === pid).map(l =>
+        `<a class="card" href="#/l/${l.id}"><div class="t">${lessonDone(l) ? "✓ " : ""}${esc(l.title)}</div><div class="d">${esc(l.tagline)}</div></a>`).join("")}</div>`).join("")}`;
+    renderSide(null);
+  }
+
+  function lessonView(id) {
+    const l = byId[id];
+    if (!l) return homeView();
+    const i = lessons.indexOf(l), prev = lessons[i - 1], next = lessons[i + 1];
+    const part = DATA.parts.find(p => p[0] === l.part)[1];
+    view.innerHTML = `<div class="crumb"><a href="#/">Overview</a> › ${esc(part)}</div>
+      <h1>${esc(l.title)} ${lessonDone(l) ? '<span class="done-badge">✓ complete</span>' : ""}</h1>
+      <p class="lesson-tag">${esc(l.tagline)}</p>
+      <div class="lesson-body">${l.body}</div>
+      ${l.quiz.length ? `<h2>Quick check</h2><div class="quiz">${l.quiz.map(([q, a]) => `<details><summary>${q}</summary><div>${a}</div></details>`).join("")}</div>` : ""}
+      ${l.exercises.length ? `<h2>Practice</h2>` + l.exercises.map((x, k) => exerciseHtml(x, k)).join("") :
+        `<p><button class="btn" id="readBtn">${lessonDone(l) ? "✓ Marked as read" : "Mark this lesson as read"}</button></p>`}
+      <div class="navrow">${prev ? `<a class="btn" href="#/l/${prev.id}">← ${esc(prev.title)}</a>` : "<span></span>"}
+        ${next ? `<a class="btn" href="#/l/${next.id}">${esc(next.title)} →</a>` : "<span></span>"}</div>`;
+    paint(view);
+    renderSide(l.id);
+    $("#readBtn")?.addEventListener("click", e => { markRead(l.id); e.target.textContent = "✓ Marked as read"; renderSide(l.id); });
+    l.exercises.forEach((x, k) => wireExercise(l, x, k));
+    if (l.exercises.length) py.warm();
+    updateStatus();
+  }
+
+  function exerciseHtml(x, k) {
+    return `<div class="exercise" id="ex-${k}">
+      <h3>✏️ ${esc(x.title)} ${passed.has(x.id) ? '<span class="done-badge">✓ passed</span>' : ""}</h3>
+      <div>${x.statement}</div>
+      ${x.hints.length ? `<div class="hints"><button class="btn hintBtn">💡 Show hint 1 of ${x.hints.length}</button><div class="hintBox"></div></div>` : ""}
+      <div class="editor">
+        <div class="ebar"><button class="btn primary runBtn">▶ Run tests</button>
+          <button class="btn resetBtn" title="Replace your code with the starter code">↺ Reset</button>
+          <span class="muted" style="font-size:12.5px"><span class="kbd">Ctrl</span>+<span class="kbd">Enter</span> run</span>
+          <span class="status pystatus"></span></div>
+        <div class="ebody"><div class="gutter">1</div><textarea class="code" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea></div>
+      </div>
+      <div class="out"></div>
+      <details class="box sol"><summary>Show a model solution (try first!)</summary><div>
+        <pre><code>${esc(x.solution)}</code></pre><button class="btn loadSol">Load this solution into the editor</button></div></details>
+    </div>`;
+  }
+
+  function wireExercise(l, x, k) {
+    const root = $("#ex-" + k), ta = $("textarea", root), gutter = $(".gutter", root), out = $(".out", root);
+    ta.value = store.get("pyPatterns.code." + x.id, null) ?? x.starter;
+    const sync = () => {
+      gutter.textContent = Array.from({ length: ta.value.split("\n").length }, (_, i) => i + 1).join("\n");
+      ta.style.height = "auto"; ta.style.height = Math.max(200, ta.scrollHeight) + "px";
+    };
+    sync();
+    let t;
+    ta.addEventListener("input", () => { sync(); clearTimeout(t); t = setTimeout(() => store.set("pyPatterns.code." + x.id, ta.value), 300); });
+    ta.addEventListener("keydown", e => editorKeys(e, ta, sync));
+    ta.addEventListener("run", () => $(".runBtn", root).click());
+    $(".resetBtn", root).onclick = () => { if (confirm("Replace your code with the starter code?")) { ta.value = x.starter; sync(); store.set("pyPatterns.code." + x.id, ta.value); } };
+    $(".loadSol", root).onclick = () => { if (confirm("Replace your code with the model solution?")) { ta.value = x.solution; sync(); store.set("pyPatterns.code." + x.id, ta.value); } };
+    let shown = 0;
+    $(".hintBtn", root)?.addEventListener("click", e => {
+      if (shown >= x.hints.length) return;
+      $(".hintBox", root).insertAdjacentHTML("beforeend", `<div class="hint"><b>Hint ${shown + 1}:</b> ${x.hints[shown]}</div>`);
+      shown++;
+      e.target.textContent = shown < x.hints.length ? `💡 Show hint ${shown + 1} of ${x.hints.length}` : "No more hints";
+      e.target.disabled = shown >= x.hints.length;
+    });
+    $(".runBtn", root).onclick = () => {
+      out.className = "out show";
+      out.innerHTML = `<div class="sum">${py.state === "ready" ? "Running tests…" : "Starting Python… your tests will run as soon as it's ready."}</div>`;
+      py.run({ payload: { user: ta.value, tests: x.tests, prelude: DATA.python.prelude, harness: DATA.python.harness, runner: DATA.python.runner },
+               done: m => showResult(l, x, root, out, m) });
+    };
+  }
+
+  function showResult(l, x, root, out, m) {
+    const stdout = m.out && m.out.trim() ? `<div class="muted" style="padding:0 14px;font-size:13px">Your print() output:</div><pre class="stdout plain">${esc(m.out.trim())}</pre>` : "";
+    if (m.timeout) { out.innerHTML = `<div class="sum fail">⏱ Time limit exceeded (10 s)</div><div class="tests">Your code ran too long. Look for an <b>infinite loop</b> or infinite recursion.</div>`; return; }
+    if (m.error) { out.innerHTML = `<div class="sum fail">Error</div><pre class="plain" style="margin:10px 14px">${esc(m.error)}</pre>${stdout}`; return; }
+    const r = JSON.parse(m.result);
+    if (r.setup) { out.innerHTML = `<div class="sum fail">Your code didn't run. Fix this first:</div><pre class="plain" style="margin:10px 14px">${esc(r.setup)}</pre>${stdout}`; return; }
+    const ok = r.results.every(t => t.ok), n = r.results.filter(t => t.ok).length;
+    out.innerHTML = `<div class="sum ${ok ? "pass" : "fail"}">${ok ? `🎉 All ${r.results.length} tests passed!` : `${n} / ${r.results.length} tests passed`}</div>
+      <div class="tests">${r.results.map(t => `<div class="t-row ${t.ok ? "ok" : "bad"}"><span class="nm">${t.ok ? "✓" : "✗"} ${esc(t.name)}</span>
+      ${t.ok ? "" : t.err ? `<pre class="plain">${esc(t.err)}</pre>` : t.exp !== "" ? `<pre class="plain">expected: ${esc(t.exp)}\n     got: ${esc(t.got)}</pre>` : `<pre class="plain">${esc(t.got || "check failed")}</pre>`}</div>`).join("")}</div>${stdout}`;
+    if (ok && !passed.has(x.id)) {
+      passed.add(x.id); store.set("pyPatterns.passed", [...passed]);
+      const c = document.createElement("div"); c.className = "confetti"; c.textContent = lessonDone(l) ? "🏆" : "🎉";
+      document.body.appendChild(c); setTimeout(() => c.remove(), 1300);
+      $("h3", root).insertAdjacentHTML("beforeend", ' <span class="done-badge">✓ passed</span>');
+      renderSide(l.id);
+    }
+  }
+
+  function route() {
+    document.body.classList.remove("nav-open");
+    const [kind, id] = location.hash.replace(/^#\/?/, "").split("/");
+    if (kind === "l") lessonView(id); else homeView();
+    window.scrollTo(0, 0);
+  }
+  addEventListener("hashchange", route);
+  addEventListener("keydown", e => { if (e.key === "/" && !e.target.matches("input, textarea")) { e.preventDefault(); $("#q").focus(); } });
+  route();
+})();
+</script>
+</body>
+</html>

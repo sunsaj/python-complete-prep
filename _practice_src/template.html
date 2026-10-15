@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coding Practice: DSA + Blind 75 in Python</title>
+<style>
+:root{--bg:#0f1115;--bg2:#151821;--bg3:#1c2030;--fg:#e6e8ee;--muted:#9aa3b5;--line:#262b3a;--accent:#ffd43b;--accent2:#4b8bbe;--ok:#3fb950;--bad:#f85149;--warn:#f0883e;--vio:#bc8cff;--cyan:#39c5cf;
+--code-bg:#0b0d12;--kw:#ff7b72;--str:#a5d6ff;--num:#79c0ff;--com:#6e7781;--fn:#d2a8ff;--bi:#ffa657;--dec:#7ee787;--side:300px}
+[data-theme="light"]{--bg:#fbfaf7;--bg2:#f3f1ec;--bg3:#ebe8e0;--fg:#1d2230;--muted:#5b6475;--line:#dcd8cd;--accent:#b8860b;--accent2:#2f6aa0;--code-bg:#f6f4ee;--kw:#cf222e;--str:#0a3069;--num:#0550ae;--com:#8c959f;--fn:#8250df;--bi:#953800;--dec:#116329}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 -apple-system,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--accent2)}
+code,pre,textarea{font-family:"JetBrains Mono","Cascadia Code",Consolas,"SF Mono",Menlo,monospace}
+.topbar{position:fixed;top:0;left:0;right:0;height:56px;z-index:30;display:flex;align-items:center;gap:12px;padding:0 16px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.brand{font-weight:800;white-space:nowrap}.brand span{color:var(--accent)}
+.topbar .grow{flex:1}
+.topbar input[type=search]{width:260px;max-width:30vw;padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:var(--bg2);color:var(--fg)}
+.btn{cursor:pointer;border:1px solid var(--line);background:var(--bg2);color:var(--fg);padding:7px 12px;border-radius:8px;font-size:14px;text-decoration:none;display:inline-flex;gap:6px;align-items:center}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--ok);border-color:var(--ok);color:#06240f;font-weight:700}
+.btn.primary:disabled{opacity:.6;cursor:wait}
+.toggle{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--muted);cursor:pointer;white-space:nowrap}
+#menuBtn{display:none}
+.side{position:fixed;top:56px;bottom:0;left:0;width:var(--side);overflow-y:auto;background:var(--bg2);border-right:1px solid var(--line);padding:12px 10px 40px}
+.meter{font-size:13px;color:var(--muted);padding:2px 8px 10px}.meter b{color:var(--fg)}
+.bar{height:6px;background:var(--bg3);border-radius:4px;overflow:hidden;margin:5px 0 8px}.bar i{display:block;height:100%;background:var(--ok);width:0}
+.tgroup{margin-bottom:2px}
+.thead{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-radius:7px;cursor:pointer;font-size:14px;font-weight:600;color:var(--fg);text-decoration:none}
+.thead:hover,.thead.active{background:var(--bg3)}
+.thead small{color:var(--muted);font-weight:500}
+.plist{display:none;padding:0 0 6px 8px}.tgroup.open .plist{display:block}
+.pitem{display:flex;gap:7px;align-items:center;padding:4px 8px;border-radius:6px;font-size:13.5px;color:var(--fg);text-decoration:none;line-height:1.3}
+.pitem:hover{background:var(--bg3)}.pitem.active{background:var(--bg3);box-shadow:inset 3px 0 0 var(--accent)}
+.pitem .ck{width:14px;color:var(--ok);flex:none}
+.pitem.hidden,.tgroup.hidden{display:none}
+.lv{font-size:10.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;padding:1px 6px;border-radius:4px;flex:none}
+.lv.Warm-up{background:#2d3a52;color:#a5d6ff}.lv.Easy{background:#1f3d2a;color:#7ee787}.lv.Medium{background:#4a3a14;color:#ffd43b}.lv.Hard{background:#4d1f1f;color:#ffa198}
+[data-theme="light"] .lv.Warm-up{background:#dbeafe;color:#1e40af}[data-theme="light"] .lv.Easy{background:#dcfce7;color:#166534}[data-theme="light"] .lv.Medium{background:#fef3c7;color:#92400e}[data-theme="light"] .lv.Hard{background:#fee2e2;color:#991b1b}
+.b75{font-size:10.5px;font-weight:800;padding:1px 6px;border-radius:4px;background:var(--vio);color:#160b2b;flex:none}
+main{margin-left:var(--side);padding:76px 28px 100px}
+.wrap{max-width:980px;margin:0 auto}
+h1{font-size:32px;line-height:1.15;margin:8px 0}
+h2{font-size:24px;margin:26px 0 8px}
+h3{font-size:19px;margin:22px 0 6px}
+h4{font-size:16px;margin:16px 0 4px;color:var(--accent2)}
+.muted{color:var(--muted)}
+:not(pre)>code{background:var(--bg3);padding:1px 6px;border-radius:5px;font-size:.88em}
+pre{background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow:auto;font-size:13.5px;line-height:1.55;margin:10px 0}
+pre.plain{color:var(--muted)}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left}th{background:var(--bg3)}
+.note{border-left:4px solid var(--cyan);background:var(--bg2);padding:9px 13px;border-radius:7px;margin:10px 0}
+.tok-kw{color:var(--kw)}.tok-str{color:var(--str)}.tok-num{color:var(--num)}.tok-com{color:var(--com);font-style:italic}.tok-fn{color:var(--fn)}.tok-bi{color:var(--bi)}.tok-dec{color:var(--dec)}.tok-self{color:var(--bi);font-style:italic}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;margin:14px 0}
+.card{display:block;border:1px solid var(--line);background:var(--bg2);border-radius:12px;padding:13px 15px;color:var(--fg);text-decoration:none}
+.card:hover{border-color:var(--accent)}
+.card .t{font-weight:700}.card .n{font-size:13px;color:var(--muted)}
+.card .d{font-size:13.5px;color:var(--muted);margin:4px 0 8px}
+.hero{border:1px solid var(--line);background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 10%,var(--bg2)),var(--bg2));border-radius:14px;padding:18px 20px;margin-bottom:14px}
+.ptable a{color:var(--fg);text-decoration:none}.ptable a:hover{color:var(--accent2)}
+.ptable td{vertical-align:middle}
+.phead{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:4px}
+.crumb{font-size:13px;color:var(--muted)}
+details.box{border:1px solid var(--line);border-radius:10px;background:var(--bg2);margin:12px 0}
+details.box>summary{cursor:pointer;padding:10px 14px;font-weight:700;list-style:none}
+details.box>summary::before{content:"▸ ";color:var(--accent)}details.box[open]>summary::before{content:"▾ "}
+details.box>div{padding:2px 16px 12px;border-top:1px solid var(--line)}
+details.box.eli{border-left:4px solid var(--cyan)}details.box.sol{border-left:4px solid var(--ok)}details.box.app{border-left:4px solid var(--vio)}
+.hints .hint{border-left:3px solid var(--accent);background:var(--bg2);padding:7px 12px;border-radius:6px;margin:6px 0}
+.editor{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--code-bg);margin-top:8px}
+.ebar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--line);background:var(--bg2)}
+.ebar .status{font-size:13px;color:var(--muted);margin-left:auto}
+.ebody{display:flex;max-height:560px;overflow:auto}
+.gutter{padding:12px 8px 12px 10px;text-align:right;color:var(--com);user-select:none;font:13.5px/1.55 "JetBrains Mono",Consolas,monospace;min-width:42px;white-space:pre;background:var(--code-bg)}
+textarea.code{flex:1;border:0;outline:0;resize:none;background:transparent;color:var(--fg);padding:12px 12px;font-size:13.5px;line-height:1.55;tab-size:4;white-space:pre;overflow:hidden;min-height:240px}
+.out{border:1px solid var(--line);border-radius:10px;margin-top:10px;background:var(--bg2);display:none}
+.out.show{display:block}
+.out .sum{padding:9px 14px;font-weight:700;border-bottom:1px solid var(--line)}
+.out .sum.pass{color:var(--ok)}.out .sum.fail{color:var(--bad)}
+.out .tests{padding:6px 14px 10px}
+.t-row{padding:5px 0;border-bottom:1px dashed var(--line);font-size:14px}.t-row:last-child{border-bottom:0}
+.t-row .nm{font-weight:600}.t-row.ok .nm{color:var(--ok)}.t-row.bad .nm{color:var(--bad)}
+.t-row pre{margin:5px 0;font-size:12.5px;padding:7px 10px}
+.out pre.stdout{margin:8px 14px 12px}
+.navrow{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+.kbd{border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 6px;font-size:12px;background:var(--bg3)}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:99;display:flex;align-items:center;justify-content:center;font-size:64px;animation:pop 1.2s ease forwards}
+@keyframes pop{0%{opacity:0;transform:scale(.5)}20%{opacity:1;transform:scale(1.1)}100%{opacity:0;transform:scale(1.4)}}
+@media (max-width:980px){.side{transform:translateX(-100%);transition:transform .2s;z-index:29}body.nav-open .side{transform:none}main{margin-left:0;padding:76px 14px 80px}#menuBtn{display:inline-flex}.topbar input[type=search]{display:none}.brand small{display:none}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="btn" id="menuBtn">☰</button>
+  <div class="brand">Coding <span>Practice</span> <small class="muted" style="font-weight:500">· DSA + Blind 75 in Python</small></div>
+  <div class="grow"></div>
+  <input type="search" id="q" placeholder="Find a problem…  ( / )" autocomplete="off">
+  <label class="toggle"><input type="checkbox" id="blindOnly"> Blind 75 only</label>
+  <a class="btn" href="patterns.html">🧩 Design patterns</a>
+  <a class="btn" href="index.html">← Python guide</a>
+  <button class="btn" id="themeBtn" title="Toggle theme">◐</button>
+</div>
+<nav class="side" id="side"></nav>
+<main><div class="wrap" id="view"></div></main>
+<script id="data" type="application/json">/*__DATA__*/</script>
+<script>
+(function () {
+  "use strict";
+  const DATA = JSON.parse(document.getElementById("data").textContent);
+  const PYODIDE = "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/";
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  };
+
+  /* ---------- theme (shared with the main guide) ---------- */
+  document.documentElement.dataset.theme = store.get("pyDeep.theme", "dark");
+  $("#themeBtn").onclick = () => {
+    const t = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = t; store.set("pyDeep.theme", t);
+  };
+  $("#menuBtn").onclick = () => document.body.classList.toggle("nav-open");
+
+  /* ---------- syntax highlighting (same tokenizer as the guide) ---------- */
+  const KW = new Set("False None True and as assert async await break class continue def del elif else except finally for from global if import in is lambda nonlocal not or pass raise return try while with yield match case".split(" "));
+  const BI = new Set("print len range int str float list dict set tuple bool object type isinstance enumerate zip map filter sorted reversed sum min max any all abs iter next open id hash repr getattr setattr hasattr super property classmethod staticmethod divmod round ord chr".split(" "));
+  const RE = /(#[^\n]*)|((?:\b[rRbBfFuU]{1,2})?(?:"""[\s\S]*?"""|'''[\s\S]*?'''|"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'))|(@[A-Za-z_][\w.]*)|(\b(?:0[xob][\da-fA-F_]+|\d[\d_]*\.?\d*(?:[eE][+-]?\d+)?)\b)|([A-Za-z_]\w*)/g;
+  function highlight(src) {
+    let out = "", last = 0, m, prev = "";
+    RE.lastIndex = 0;
+    while ((m = RE.exec(src))) {
+      out += esc(src.slice(last, m.index));
+      let cls = null; const t = m[0];
+      if (m[1]) cls = "com"; else if (m[2]) cls = "str"; else if (m[3]) cls = "dec"; else if (m[4]) cls = "num";
+      else if (m[5]) { cls = (prev === "def" || prev === "class") ? "fn" : KW.has(t) ? "kw" : (t === "self" || t === "cls") ? "self" : BI.has(t) ? "bi" : null; prev = t; }
+      if (!m[5]) prev = "";
+      out += cls ? `<span class="tok-${cls}">${esc(t)}</span>` : esc(t);
+      last = RE.lastIndex;
+    }
+    return out + esc(src.slice(last));
+  }
+  const paint = root => $$("pre:not(.plain) > code", root).forEach(c => c.innerHTML = highlight(c.textContent));
+
+  /* ---------- data helpers ---------- */
+  const LEVELS = ["Warm-up", "Easy", "Medium", "Hard"];
+  const topics = DATA.topics;
+  const byId = Object.fromEntries(DATA.problems.map(p => [p.id, p]));
+  let solved = new Set(store.get("pyPractice.solved", []));
+  const blindOnly = $("#blindOnly");
+  blindOnly.checked = store.get("pyPractice.blindOnly", false);
+  const visible = () => DATA.problems.filter(p => !blindOnly.checked || p.blind);
+  const inTopic = t => visible().filter(p => p.topic === t);
+  const badge = p => `<span class="lv ${p.level}">${p.level}</span>${p.blind ? '<span class="b75" title="Part of the Blind 75 list">B75</span>' : ""}`;
+
+  /* ---------- sidebar ---------- */
+  function renderSide(activeTopic, activeProblem) {
+    const all = visible(), done = all.filter(p => solved.has(p.id)).length;
+    const blind = DATA.problems.filter(p => p.blind), blindDone = blind.filter(p => solved.has(p.id)).length;
+    let html = `<a class="thead" href="#/" style="margin-bottom:4px">🏠 Start here <small></small></a>
+      <div class="meter"><b>${done}</b> / ${all.length} solved
+        <div class="bar"><i style="width:${100 * done / Math.max(1, all.length)}%"></i></div>
+        Blind 75: <b>${blindDone}</b> / ${blind.length}</div>`;
+    topics.forEach((t, i) => {
+      const ps = inTopic(t.id);
+      const d = ps.filter(p => solved.has(p.id)).length;
+      const open = t.id === activeTopic;
+      html += `<div class="tgroup${open ? " open" : ""}${ps.length ? "" : " hidden"}" data-topic="${t.id}">
+        <a class="thead${open && !activeProblem ? " active" : ""}" href="#/t/${t.id}"><span>${i + 1}. ${esc(t.title)}</span><small>${d}/${ps.length}</small></a>
+        <div class="plist">${ps.map(p => `<a class="pitem${p.id === activeProblem ? " active" : ""}" data-title="${esc(p.title.toLowerCase())}" href="#/p/${p.id}"><span class="ck">${solved.has(p.id) ? "✓" : ""}</span>${badge(p)}<span>${esc(p.title)}</span></a>`).join("")}</div></div>`;
+    });
+    $("#side").innerHTML = html;
+    applySearch();
+    $(".pitem.active")?.scrollIntoView({ block: "nearest" });
+  }
+  function applySearch() {
+    const q = $("#q").value.trim().toLowerCase();
+    $$(".tgroup").forEach(g => {
+      if (!q) { $$(".pitem", g).forEach(a => a.classList.remove("hidden")); return; }
+      let any = false;
+      $$(".pitem", g).forEach(a => { const hit = a.dataset.title.includes(q); a.classList.toggle("hidden", !hit); any ||= hit; });
+      g.classList.toggle("open", any);
+    });
+  }
+  $("#q").addEventListener("input", applySearch);
+  blindOnly.addEventListener("change", () => { store.set("pyPractice.blindOnly", blindOnly.checked); route(); });
+
+  /* ---------- views ---------- */
+  const view = $("#view");
+  const nextUnsolved = () => visible().find(p => !solved.has(p.id));
+
+  function homeView() {
+    const nu = nextUnsolved();
+    view.innerHTML = `
+      <div class="hero"><h1>Coding practice: DSA + the Blind 75</h1>
+      <p class="muted" style="margin:4px 0 12px">${DATA.problems.length} problems in ${topics.length} topics. Each topic climbs <b>Warm-up → Easy → Medium → Hard</b>. All <b>75 Blind 75</b> problems are included (marked <span class="b75">B75</span>), each explained for a complete beginner. Write and run real Python right in your browser.</p>
+      ${nu ? `<a class="btn primary" href="#/p/${nu.id}">▶ Continue: ${esc(nu.title)}</a>` : "<b>🎉 Everything solved!</b>"}</div>
+      ${DATA.intro}
+      <h2>Topics (do them in this order)</h2>
+      <div class="cards">${topics.map((t, i) => {
+        const ps = inTopic(t.id), d = ps.filter(p => solved.has(p.id)).length;
+        return `<a class="card" href="#/t/${t.id}"><div class="t">${i + 1}. ${esc(t.title)}</div><div class="d">${esc(t.blurb)}</div>
+          <div class="n">${d}/${ps.length} solved · ${ps.filter(p => p.blind).length} Blind 75</div><div class="bar"><i style="width:${100 * d / Math.max(1, ps.length)}%"></i></div></a>`;
+      }).join("")}</div>`;
+    paint(view);
+    renderSide(null, null);
+  }
+
+  function topicView(tid) {
+    const t = topics.find(x => x.id === tid);
+    if (!t) return homeView();
+    const ps = inTopic(tid), i = topics.indexOf(t);
+    view.innerHTML = `<div class="crumb"><a href="#/">Practice</a> › Topic ${i + 1}</div>
+      <h1>${i + 1}. ${esc(t.title)}</h1><p class="muted">${esc(t.blurb)}</p>
+      <details class="box eli" open><summary>Understand the idea first</summary><div>${t.primer}</div></details>
+      <h2>Problems, easiest first</h2>
+      <table class="ptable"><tr><th></th><th>Problem</th><th>Level</th><th>LeetCode</th></tr>
+      ${ps.map(p => `<tr><td style="width:28px;color:var(--ok)">${solved.has(p.id) ? "✓" : ""}</td><td><a href="#/p/${p.id}">${esc(p.title)}</a></td><td>${badge(p)}</td><td class="muted">${p.lc ? "#" + p.lc : "—"}</td></tr>`).join("")}
+      </table>
+      <div class="navrow">${i > 0 ? `<a class="btn" href="#/t/${topics[i - 1].id}">← ${esc(topics[i - 1].title)}</a>` : "<span></span>"}
+      ${ps[0] ? `<a class="btn primary" href="#/p/${(ps.find(p => !solved.has(p.id)) || ps[0]).id}">▶ Start solving</a>` : ""}
+      ${i < topics.length - 1 ? `<a class="btn" href="#/t/${topics[i + 1].id}">${esc(topics[i + 1].title)} →</a>` : "<span></span>"}</div>`;
+    paint(view);
+    renderSide(tid, null);
+  }
+
+  function problemView(pid) {
+    const p = byId[pid];
+    if (!p) return homeView();
+    const list = visible(), idx = list.indexOf(p);
+    const prev = list[idx - 1], next = list[idx + 1];
+    const t = topics.find(x => x.id === p.topic);
+    const saved = store.get("pyPractice.code." + p.id, null);
+    view.innerHTML = `
+      <div class="crumb"><a href="#/">Practice</a> › <a href="#/t/${t.id}">${esc(t.title)}</a></div>
+      <div class="phead"><h1 style="margin:4px 8px 4px 0">${esc(p.title)}</h1>${badge(p)}
+        ${p.lc ? `<span class="muted" style="font-size:13px">LeetCode #${p.lc}</span>` : ""}
+        ${solved.has(p.id) ? '<span style="color:var(--ok);font-weight:700">✓ solved</span>' : ""}</div>
+      <div>${p.statement}</div>
+      ${p.examples ? `<h4>Examples</h4>${p.examples}` : ""}
+      ${p.eli10 ? `<details class="box eli" open><summary>Understand it like a 10th grader</summary><div>${p.eli10}</div></details>` : ""}
+      ${p.hints.length ? `<div class="hints"><button class="btn" id="hintBtn">💡 Show hint 1 of ${p.hints.length}</button><div id="hintBox"></div></div>` : ""}
+      <h3>Your solution</h3>
+      <div class="editor">
+        <div class="ebar">
+          <button class="btn primary" id="runBtn">▶ Run tests</button>
+          <button class="btn" id="resetBtn" title="Replace your code with the starter code">↺ Reset</button>
+          <span class="muted" style="font-size:12.5px"><span class="kbd">Ctrl</span>+<span class="kbd">Enter</span> run · <span class="kbd">Tab</span> indent</span>
+          <span class="status" id="status"></span>
+        </div>
+        <div class="ebody"><div class="gutter" id="gutter">1</div><textarea class="code" id="code" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea></div>
+      </div>
+      <div class="out" id="out"></div>
+      ${p.approach ? `<details class="box app"><summary>Approach &amp; walk-through (try first!)</summary><div>${p.approach}</div></details>` : ""}
+      <details class="box sol"><summary>Solution, complexity &amp; common mistakes</summary><div>
+        <pre><code>${esc(p.solution)}</code></pre>
+        <button class="btn" id="loadSol">Load this solution into the editor</button>
+        ${p.complexity ? `<h4>Complexity</h4><div>${p.complexity}</div>` : ""}
+        ${p.mistakes ? `<h4>Common mistakes</h4><div>${p.mistakes}</div>` : ""}
+      </div></details>
+      <div class="navrow">${prev ? `<a class="btn" href="#/p/${prev.id}">← ${esc(prev.title)}</a>` : "<span></span>"}
+        ${next ? `<a class="btn" href="#/p/${next.id}">${esc(next.title)} →</a>` : "<span></span>"}</div>`;
+    paint(view);
+    renderSide(p.topic, p.id);
+
+    // hints, one at a time
+    let shown = 0;
+    $("#hintBtn")?.addEventListener("click", e => {
+      if (shown >= p.hints.length) return;
+      $("#hintBox").insertAdjacentHTML("beforeend", `<div class="hint"><b>Hint ${shown + 1}:</b> ${p.hints[shown]}</div>`);
+      shown++;
+      e.target.textContent = shown < p.hints.length ? `💡 Show hint ${shown + 1} of ${p.hints.length}` : "No more hints";
+      e.target.disabled = shown >= p.hints.length;
+    });
+
+    // editor
+    const ta = $("#code"), gutter = $("#gutter");
+    ta.value = saved ?? p.starter;
+    const sync = () => {
+      const n = ta.value.split("\n").length;
+      gutter.textContent = Array.from({ length: n }, (_, i) => i + 1).join("\n");
+      ta.style.height = "auto"; ta.style.height = Math.max(240, ta.scrollHeight) + "px";
+    };
+    sync();
+    let saveTimer;
+    ta.addEventListener("input", () => { sync(); clearTimeout(saveTimer); saveTimer = setTimeout(() => store.set("pyPractice.code." + p.id, ta.value), 300); });
+    ta.addEventListener("keydown", e => editorKeys(e, ta, sync));
+    $("#resetBtn").onclick = () => { if (confirm("Replace your code with the starter code?")) { ta.value = p.starter; sync(); store.set("pyPractice.code." + p.id, ta.value); } };
+    $("#loadSol").onclick = () => {
+      if (ta.value.trim() !== p.starter.trim() && !confirm("Replace your code with the solution?")) return;
+      ta.value = p.solution; sync(); store.set("pyPractice.code." + p.id, ta.value); ta.focus();
+    };
+    $("#runBtn").onclick = () => runTests(p, ta.value);
+    py.warm();                     // start loading Python in the background
+    updateStatus();
+  }
+
+  /* ---------- tiny code editor: tab / shift-tab / auto-indent / ctrl+enter ---------- */
+  function editorKeys(e, ta, sync) {
+    const { selectionStart: s, selectionEnd: en, value: v } = ta;
+    const replace = (from, to, text, selS, selE) => {
+      ta.setRangeText(text, from, to, "end");
+      if (selS !== undefined) ta.setSelectionRange(selS, selE);
+      ta.dispatchEvent(new Event("input"));
+    };
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); $("#runBtn").click(); return; }
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const lineStart = v.lastIndexOf("\n", s - 1) + 1;
+      if (s === en && !e.shiftKey) { replace(s, en, "    "); return; }
+      const block = v.slice(lineStart, en);
+      const lines = block.split("\n");
+      const out = e.shiftKey ? lines.map(l => l.replace(/^ {1,4}/, "")) : lines.map(l => "    " + l);
+      const text = out.join("\n");
+      replace(lineStart, en, text, lineStart, lineStart + text.length);
+      return;
+    }
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      const lineStart = v.lastIndexOf("\n", s - 1) + 1;
+      const line = v.slice(lineStart, s);
+      let indent = line.match(/^ */)[0];
+      if (/:\s*(#.*)?$/.test(line)) indent += "    ";
+      replace(s, en, "\n" + indent);
+      return;
+    }
+    if (e.key === "Backspace" && s === en) {
+      const lineStart = v.lastIndexOf("\n", s - 1) + 1;
+      const before = v.slice(lineStart, s);
+      if (before.length && /^ +$/.test(before)) {
+        e.preventDefault();
+        const cut = before.length % 4 || 4;
+        replace(s - cut, s, "");
+      }
+    }
+  }
+
+  /* ---------- Python runner: Pyodide inside a Web Worker (so infinite loops can be stopped) ---------- */
+  const WORKER_SRC = `
+    let ready = null;
+    function init(url) {
+      if (!ready) ready = (async () => { importScripts(url + "pyodide.js"); self.py = await loadPyodide({ indexURL: url }); })();
+      return ready;
+    }
+    self.onmessage = async (e) => {
+      const m = e.data;
+      try { await init(m.url); } catch (err) { postMessage({ type: "fatal", error: String(err) }); return; }
+      if (m.type === "warm") { postMessage({ type: "ready" }); return; }
+      let out = "";
+      py.setStdout({ batched: s => { if (out.length < 20000) out += s + "\\n"; } });
+      py.setStderr({ batched: s => { if (out.length < 20000) out += s + "\\n"; } });
+      let ns;
+      try {
+        ns = py.globals.get("dict")();
+        ns.set("USER_SRC", m.user); ns.set("TEST_SRC", m.tests); ns.set("__name__", "__main__");
+        py.runPython(m.prelude, { globals: ns });
+        py.runPython(m.harness, { globals: ns });
+        py.runPython(m.runner, { globals: ns });
+        postMessage({ type: "result", result: ns.get("RESULT"), out });
+      } catch (err) {
+        postMessage({ type: "result", error: String(err && err.message || err), out });
+      } finally { try { ns && ns.destroy(); } catch {} }
+    };`;
+  const py = {
+    worker: null, state: "idle", pending: null, timer: null,
+    spawn() {
+      this.worker = new Worker(URL.createObjectURL(new Blob([WORKER_SRC], { type: "text/javascript" })));
+      this.state = "loading"; updateStatus();
+      this.worker.onmessage = e => this.onMessage(e.data);
+      this.worker.onerror = e => { this.state = "error"; this.lastError = e.message || "worker error"; updateStatus(); };
+      this.worker.postMessage({ type: "warm", url: PYODIDE });
+    },
+    warm() { if (!this.worker) this.spawn(); },
+    onMessage(m) {
+      if (m.type === "ready") { this.state = "ready"; updateStatus(); if (this.queued) { const q = this.queued; this.queued = null; this.send(q); } return; }
+      if (m.type === "fatal") { this.state = "error"; this.lastError = m.error; updateStatus(); this.finish({ error: "Could not load Python: " + m.error + "\n\nYou need an internet connection the first time (Pyodide is downloaded from cdn.jsdelivr.net)." }); return; }
+      if (m.type === "result") { clearTimeout(this.timer); this.state = "ready"; updateStatus(); this.finish(m); }
+    },
+    run(job) {
+      this.pending = job;
+      if (!this.worker || this.state === "error") { this.worker?.terminate(); this.worker = null; this.spawn(); }
+      if (this.state === "ready") this.send(job); else this.queued = job;
+    },
+    send(job) {
+      this.state = "running"; updateStatus();
+      this.worker.postMessage({ type: "run", url: PYODIDE, ...job.payload });
+      this.timer = setTimeout(() => {           // runaway code: kill the worker and start fresh
+        this.worker.terminate(); this.worker = null; this.state = "idle"; updateStatus();
+        this.finish({ timeout: true });
+      }, 10000);
+    },
+    finish(m) { const job = this.pending; this.pending = null; if (job) job.done(m); },
+  };
+  function updateStatus() {
+    const el = $("#status"); if (!el) return;
+    const txt = { idle: "", loading: "⏳ Loading Python in your browser… (first time ~10 MB, then cached)", ready: "🟢 Python ready", running: "⚙️ Running…", error: "🔴 Python failed to load" }[py.state];
+    el.textContent = txt || "";
+    const b = $("#runBtn"); if (b) b.disabled = py.state === "running";
+  }
+
+  function runTests(p, code) {
+    const out = $("#out");
+    out.className = "out show";
+    out.innerHTML = `<div class="sum">${py.state === "ready" ? "Running tests…" : "Starting Python… your tests will run as soon as it's ready."}</div>`;
+    py.run({
+      payload: { user: code, tests: p.tests, prelude: DATA.python.prelude, harness: DATA.python.harness, runner: DATA.python.runner },
+      done: m => showResult(p, m),
+    });
+  }
+  function showResult(p, m) {
+    const out = $("#out"); if (!out) return;
+    const stdout = m.out && m.out.trim() ? `<div class="muted" style="padding:0 14px;font-size:13px">Your print() output:</div><pre class="stdout plain">${esc(m.out.trim())}</pre>` : "";
+    if (m.timeout) { out.innerHTML = `<div class="sum fail">⏱ Time limit exceeded (10 s)</div><div class="tests">Your code ran too long. Look for an <b>infinite loop</b> (a while loop whose condition never becomes false, or a pointer that never moves), or a solution that is too slow (O(n²) on a big test).</div>`; return; }
+    if (m.error) { out.innerHTML = `<div class="sum fail">Error</div><pre class="plain" style="margin:10px 14px">${esc(m.error)}</pre>${stdout}`; return; }
+    const r = JSON.parse(m.result);
+    if (r.setup) { out.innerHTML = `<div class="sum fail">Your code didn't run. Fix this first:</div><pre class="plain" style="margin:10px 14px">${esc(r.setup)}</pre>${stdout}`; return; }
+    const passed = r.results.filter(x => x.ok).length, all = r.results.length, ok = passed === all;
+    const rows = r.results.map(x => `<div class="t-row ${x.ok ? "ok" : "bad"}"><span class="nm">${x.ok ? "✓" : "✗"} ${esc(x.name)}</span>
+      ${x.ok ? "" : x.err ? `<pre class="plain">${esc(x.err)}</pre>` : x.exp !== "" ? `<pre class="plain">expected: ${esc(x.exp)}\n     got: ${esc(x.got)}</pre>` : `<pre class="plain">${esc(x.got || "check failed")}</pre>`}</div>`).join("");
+    out.innerHTML = `<div class="sum ${ok ? "pass" : "fail"}">${ok ? "🎉 All " + all + " tests passed!" : passed + " / " + all + " tests passed"}</div><div class="tests">${rows}</div>${stdout}`;
+    if (ok && !solved.has(p.id)) {
+      solved.add(p.id); store.set("pyPractice.solved", [...solved]);
+      const c = document.createElement("div"); c.className = "confetti"; c.textContent = "🎉"; document.body.appendChild(c); setTimeout(() => c.remove(), 1300);
+      renderSide(p.topic, p.id);
+      const h = $(".phead"); if (h && !h.textContent.includes("solved")) h.insertAdjacentHTML("beforeend", '<span style="color:var(--ok);font-weight:700">✓ solved</span>');
+    }
+  }
+
+  /* ---------- router ---------- */
+  function route() {
+    document.body.classList.remove("nav-open");
+    const h = location.hash.replace(/^#\/?/, "");
+    const [kind, id] = h.split("/");
+    if (kind === "p") problemView(id);
+    else if (kind === "t") topicView(id);
+    else homeView();
+    window.scrollTo(0, 0);
+  }
+  addEventListener("hashchange", route);
+  addEventListener("keydown", e => {
+    if (e.key === "/" && !e.target.matches("input, textarea")) { e.preventDefault(); $("#q").focus(); }
+  });
+  route();
+})();
+</script>
+</body>
+</html>
